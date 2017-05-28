@@ -24,4 +24,9 @@ class Converter
   end
   
   
+  def self.base64_decode(input)
+    Base64.decode64(input)
+  end
+  
+  
 end

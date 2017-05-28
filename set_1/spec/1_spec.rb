@@ -58,4 +58,16 @@ RSpec.describe Crypto, "set 1" do
   end
   
   
+  context "question 6" do
+    it "should be able to break a repeating-key XOR" do
+      cipher_http = HTTParty.get('https://cryptopals.com/static/challenge-data/6.txt')
+      cipher_text = Converter.base64_decode(cipher_http.body)
+      key_length = Crypto.find_key_len(cipher_text)
+      key = Crypto.break_xor_key(cipher_text, key_length)
+      ans = 'Terminator X: Bring the noise'
+      expect(key).to eq(ans)
+    end
+  end
+  
+  
 end
