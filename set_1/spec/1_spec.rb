@@ -37,12 +37,18 @@ RSpec.describe Crypto, "set 1" do
   
   
   context "question 4" do
-    it "should be able to detect XOR manipulation" do
+    before(:all) do
       cipher_http = HTTParty.get('https://cryptopals.com/static/challenge-data/4.txt')
-      key = ''
-      key, cleartext = Crypto.detect_xor(cipher_http.body)
-      expect(key).to eq('5')
-      expect(cleartext.strip).to eq('Now that the party is jumping')
+      @key = ''
+      @key, @clear_text = Crypto.detect_xor(cipher_http.body)
+    end
+    
+    it "should detect XOR manipulation with proper key" do
+      expect(@key).to eq('5')
+    end
+    
+    it "should detect XOR manipulation with proper clear_text"  do
+      expect(@clear_text.strip).to eq('Now that the party is jumping')
     end
   end
   
@@ -65,8 +71,30 @@ RSpec.describe Crypto, "set 1" do
       key_length = Crypto.find_key_len(cipher_text)
       key = Crypto.break_xor_key(cipher_text, key_length)
       ans = 'Terminator X: Bring the noise'
-      Crypto.decrypt_to_file(cipher_text, key, '6.txt')
+      # Crypto.decrypt_to_file(cipher_text, key, '6.txt')
       expect(key).to eq(ans)
+    end
+  end
+  
+  
+  context "question 7" do
+    it "should be able to break AES-128 ECB (electronic code book) encryption" do
+      cipher_http = HTTParty.get('https://cryptopals.com/static/challenge-data/7.txt')
+      cipher_text = Converter.base64_decode(cipher_http.body)
+      key = "YELLOW SUBMARINE"
+      plain_text = Crypto.open_ssl_decrypt(cipher_text, key, 'aes-128-ecb')
+      assert = "I'm back and I'm ringin' the bell"
+      expect(plain_text.split(" \n").first).to eq(assert)
+    end
+  end
+  
+  
+  context "question 8" do
+    it "should be able to break detect ECB (electronic code book) encryption" do
+      cipher_chunks = HTTParty.get('https://cryptopals.com/static/challenge-data/8.txt').body.split("\n")
+      results = Crypto.detect_ecb(cipher_chunks)
+      assert = "d880619740a8a19b7840a8a31c810a3d0"
+      expect(results.first[0..32]).to eq(assert)
     end
   end
   

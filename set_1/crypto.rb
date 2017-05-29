@@ -1,4 +1,5 @@
 require 'pry'
+require 'OpenSSL'
 require_relative 'converter'
 require_relative 'constants'
 
@@ -170,6 +171,25 @@ class Crypto
         end 
       end
     end
+  end
+  
+  
+  def self.open_ssl_decrypt(cipher_text, key, cipher_type)
+    decipher = OpenSSL::Cipher.new(cipher_type)
+    decipher.decrypt
+    decipher.key = key
+    decipher.update(cipher_text) + decipher.final
+  end
+  
+  
+  def self.detect_ecb(cipher_chunks)
+    result = []
+    cipher_chunks.each do |chunk|
+      # Break into 16 byte chunks
+      sub_chunks = chunk.scan(/.{1,32}/)
+      result << chunk if sub_chunks.uniq.length < sub_chunks.length
+    end
+    result
   end
   
   
