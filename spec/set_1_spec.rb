@@ -1,7 +1,7 @@
 require 'rspec'
 require 'HTTParty'
-require_relative '../crypto'
-require_relative '../converter'
+require_relative '../shared/crypto'
+require_relative '../shared/converter'
 
 RSpec.describe Crypto, "set 1" do
   
