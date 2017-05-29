@@ -136,14 +136,21 @@ class Crypto
   end
   
   
-  def self.break_xor_key(cipher_text, key_length)
+  def self.build_chunks(cipher_text, key_length, floor = true)
     cipher_chunks = []
     cipher_text = cipher_text.bytes
     # Leave of any remaning bits that can't fit into the key_length
-    (Float(cipher_text.length)/key_length).floor().times do |i|
+    (Float(cipher_text.length)/key_length).ceil().times do |i|
       start_index = i * key_length
       cipher_chunks << cipher_text.slice(start_index, key_length)
     end
+    cipher_chunks.pop if floor
+    cipher_chunks
+  end
+  
+  
+  def self.break_xor_key(cipher_text, key_length)
+    cipher_chunks = build_chunks(cipher_text, key_length)
     final_key = []
     cipher_chunks.transpose.each do |chunk|
       key, score = break_xor(chunk.pack('C*'))
@@ -151,6 +158,18 @@ class Crypto
       final_key << key
     end
     final_key.join('')
+  end
+  
+  
+  def self.decrypt_to_file(cipher_text, key, file_name)
+    if !File.file?(file_name)
+      cipher_chunks = build_chunks(cipher_text, key.length, false)
+      File.open(file_name, 'w') do |f|
+        cipher_chunks.each do |chunk|
+          f << xor_key(chunk.pack('C*'), key)
+        end 
+      end
+    end
   end
   
   

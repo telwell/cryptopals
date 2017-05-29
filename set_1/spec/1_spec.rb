@@ -65,6 +65,7 @@ RSpec.describe Crypto, "set 1" do
       key_length = Crypto.find_key_len(cipher_text)
       key = Crypto.break_xor_key(cipher_text, key_length)
       ans = 'Terminator X: Bring the noise'
+      Crypto.decrypt_to_file(cipher_text, key, '6.txt')
       expect(key).to eq(ans)
     end
   end
