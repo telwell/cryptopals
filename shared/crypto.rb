@@ -193,4 +193,14 @@ class Crypto
   end
   
   
+  # Impliment PKCS#7 padding if str.length < length
+  def self.right_pad(str, length)
+    pad = "\x04"
+    while str.length < length
+      str << pad
+    end
+    str
+  end
+  
+  
 end
